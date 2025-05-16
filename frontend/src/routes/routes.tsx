@@ -7,6 +7,7 @@ import DocumentPage from '../pages/document/DocumentPage';
 import Processes from '../pages/Processes';
 import Validations from '../pages/Validations';
 import NotFound from '../pages/404';
+import DocumentEdit from '../pages/document/DocumentEdit';
 
 
 const routes: RouteObject[] = [
@@ -29,6 +30,13 @@ const routes: RouteObject[] = [
     element: <PublicLayout />,
     children: [
       { path: '', element: <DocumentPage /> },
+    ]
+  },
+  {
+    path: '/document/edit/:id',
+    element: <PublicLayout />,
+    children: [
+      { path: '', element: <DocumentEdit /> },
     ]
   },
   {

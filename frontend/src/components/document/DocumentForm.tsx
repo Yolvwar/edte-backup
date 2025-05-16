@@ -15,6 +15,7 @@ import DateRangePicker from "@/components/daterange-picker";
 import UploadFiles from "@/components/upload-files";
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { ArrowRight, CheckCircle, Circle } from 'lucide-react';
+import AlertPopup from '../alert/alertPopup.tsx'
 
 export default function DocumentForm() {
   const { addDocument } = useContext(DocumentContext);
@@ -136,11 +137,8 @@ export default function DocumentForm() {
       {/* Alerte en haut de l'écran */}
       {showAlert && (
         <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50 w-[20%]">
-          <Alert variant={alert.type === "success" ? "default" : "destructive"} className="relative">
-            <AlertTitle>{alert.type === "success" ? "Succès" : "Erreur"}</AlertTitle>
-            <AlertDescription>{alert.message}</AlertDescription>
-          </Alert>
-        </div>
+          <AlertPopup status="success" message="Le document a été créé avec succès !"/>
+          </div>
       )}
 
       <Card className="w-full">

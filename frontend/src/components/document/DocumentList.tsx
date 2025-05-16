@@ -4,20 +4,33 @@ import { fr } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { DocumentContext } from '../../contexts/DocumentContext';
 import { ProcessContext } from '../../contexts/ProcessContext';
+import DocumentForm from './DocumentForm'
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Eye, Trash2, Search, Filter, Edit } from 'lucide-react';
+import DialogConfirmater from '../DialogConfirmater';
+import { Eye, Trash2, Search, Filter, Edit, CircleAlertIcon } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function DocumentList() {
-  const { documents, deleteDocument, editDocument } = useContext(DocumentContext);
+  const { documents, deleteDocument } = useContext(DocumentContext);
   const { processes } = useContext(ProcessContext);
   const navigate = useNavigate();
 
@@ -25,10 +38,6 @@ export default function DocumentList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState(documents);
-  const [editingDocument, setEditingDocument] = useState(null);
-
-  // Liste des statuts possibles
-  const allStatuses = ['brouillon', 'envoyé', 'validé', 'à modifier'];
 
   // Obtenir le nom du processus à partir de son ID
   const getProcessName = (processId) => {
@@ -55,6 +64,8 @@ export default function DocumentList() {
     return posteSource ? posteSource.name : 'Poste source inconnu'
   }
 
+  const allStatuses = ['brouillon', 'envoyé', 'validé', 'à modifier'];
+
    // Formater le statut pour l'affichage
    const getStatusBadge = (status) => {
     switch (status) {
@@ -76,8 +87,8 @@ export default function DocumentList() {
     navigate(`/document/${documentId}`);
   };
 
-  const handleEdit = (document) => {
-    set
+  const handleEditDocument = (documentId) => {
+    navigate(`/document/edit/${documentId}`);
   }
 
   // Filtrer les documents à chaque changement de recherche ou de filtres
@@ -246,23 +257,55 @@ export default function DocumentList() {
                     className="text-grey-600 hover:text-grey-800"
                     onClick={(e) => {
                       e.stopPropagation();
-                      editDocument(doc.id);
+                      handleEditDocument(doc.id);
                     }}
                   >
                     <Edit size={16} className="mr-1" />
                   </Button>
 
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-red-600 hover:text-red-800"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteDocument(doc.id);
-                    }}
-                  >
-                    <Trash2 size={16} className="mr-1" />
-                  </Button>
+                
+
+                  <AlertDialog onClick={(e) => {
+                        e.stopPropagation();
+                      }}>
+                    <AlertDialogTrigger asChild onClick={(e) => {
+                        e.stopPropagation(); // Empêche la propagation de l'événement
+                      }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-800"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Trash2 size={16} className="mr-1" />
+                    </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent onClick={(e) => {
+                        e.stopPropagation();
+                      }}>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmez votre action.</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Vous vous apprêtez à supprimer le document  
+                          <span className="text-foreground"> {doc.name}</span>,
+                          cette action est irréversible. Etes vous sur ?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={(e) => {
+                        e.stopPropagation();
+                      }}>Annuler</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => {
+                          e.stopPropagation();
+                          deleteDocument(doc.id);}}>
+                          Supprimer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
                 </div>
               </CardFooter>
             </Card>
